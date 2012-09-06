@@ -129,8 +129,9 @@ void cbconv(struct bsdconv_instance *ins){
 
 	ucs4_t ib[m];
 	ucs4_t ob[n];
-	ucs4_t *ic=ib, *oc=ob;
+	ucs4_t *ic, *oc;
 
+	ic=ib;
 	while(r->qh->next){
 		*ic=r->qh->next->c;
 		t=r->qh->next->next;
@@ -142,8 +143,9 @@ void cbconv(struct bsdconv_instance *ins){
 	r->qh->c=0;
 
 	ic=ib;
-
 	while(m){
+		oc=ob;
+		n=on;
 		opencc_convert(r->cc, &ic, &m, &oc, &n);
 		for(i=0;i<on-n;++i){
 			j=0;
