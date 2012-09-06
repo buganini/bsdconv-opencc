@@ -16,5 +16,6 @@ Available conversions:
 	OPENCC-ZHTW2ZHCN_T
 	OPENCC-ZHTW2ZHS
 	OPENCC-ZHTW2ZHT
+	OPENCC // with config filename set in environment variable BSDCONV_OPENCC
 
 See http://code.google.com/p/opencc/ for more informantion.

@@ -29,12 +29,15 @@ callback: OPENCC.c
 		cfg=`echo $${item} | tr [A-Z] [a-z]` ; \
 		$(CC) ${CFLAGS} -DBSDCONV_OPENCC_CONVERSION='"'$${cfg}'.ini"' -fPIC -shared -o OPENCC-$${item}.so OPENCC.c ${LIBS} ; \
 	done
+	$(CC) ${CFLAGS} -DBSDCONV_OPENCC_CONVERSION='getenv("BSDCONV_OPENCC")' -fPIC -shared -o OPENCC.so OPENCC.c ${LIBS}
 
 clean:
-	rm -rf OPENCC OPENCC-*
+	rm -rf OPENCC OPENCC.so OPENCC-*
 
 install:
 	for item in ${CONFIGS} ; do \
 		install -m 444 OPENCC ${PREFIX}/share/bsdconv/inter/OPENCC-$${item} ; \
 		install -m 444 OPENCC-$${item}.so ${PREFIX}/share/bsdconv/inter/OPENCC-$${item}.so ; \
 	done
+	install -m 444 OPENCC ${PREFIX}/share/bsdconv/inter/OPENCC
+	install -m 444 OPENCC.so ${PREFIX}/share/bsdconv/inter/OPENCC.so

@@ -17,6 +17,7 @@
  * OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#include <stdlib.h>
 #include <bsdconv.h>
 #include <opencc/opencc.h>
 #include <string.h>
