@@ -22,9 +22,7 @@ CONFIGS+=ZHTW2ZHS
 CONFIGS+=ZHTW2ZHT
 
 map: OPENCC.txt
-	for item in ${CONFIGS} ; do \
-		bsdconv_mktable OPENCC.txt OPENCC-$${item} ; \
-	done
+	bsdconv_mktable OPENCC.txt OPENCC
 
 callback: OPENCC.c
 	for item in ${CONFIGS} ; do \
@@ -33,10 +31,10 @@ callback: OPENCC.c
 	done
 
 clean:
-	rm -rf OPENCC-*
+	rm -rf OPENCC OPENCC-*
 
 install:
 	for item in ${CONFIGS} ; do \
-		install -m 444 OPENCC-$${item} ${PREFIX}/share/bsdconv/inter/OPENCC-$${item} ; \
+		install -m 444 OPENCC ${PREFIX}/share/bsdconv/inter/OPENCC-$${item} ; \
 		install -m 444 OPENCC-$${item}.so ${PREFIX}/share/bsdconv/inter/OPENCC-$${item}.so ; \
 	done
