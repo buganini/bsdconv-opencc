@@ -1,7 +1,7 @@
 Example:
 	bsdconv utf-8:opencc-zhs2zhtw_vp:utf-8 chinese.txt
 
-Available conversion:
+Available conversions:
 	OPENCC-MIX2ZHS
 	OPENCC-MIX2ZHT
 	OPENCC-ZHS2ZHT
