@@ -9,7 +9,7 @@ map: OPENCC.txt
 	bsdconv_mktable OPENCC.txt OPENCC
 
 callback: OPENCC.c
-	$(CC) ${CFLAGS} -fPIC -shared -o OPENCC.so OPENCC.c ${LIBS}
+	$(CC) ${CFLAGS} -DBSDCONV_OPENCC_CONVERSION=OPENCC_DEFAULT_CONFIG_TRAD_TO_SIMP -fPIC -shared -o OPENCC.so OPENCC.c ${LIBS}
 
 clean:
 	rm -rf OPENCC OPENCC.so
