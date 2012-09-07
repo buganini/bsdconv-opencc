@@ -81,48 +81,11 @@ void cbdestroy(struct bsdconv_instance *ins){
 	free(r);
 }
 
-void cbconv(struct bsdconv_instance *ins){
+void cbflush(struct bsdconv_instance *ins){
 	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
 	struct my_s *r=CURRENT_CODEC(ins)->priv;
-	unsigned char *data=data=this_phase->curr->data;
-	int ucs=0;
 	struct ucs4_s *t;
 	int i,j;
-	int max=sizeof(zhrange) / sizeof(struct range) - 1;
-	int min = 0;
-	int mid;
-	int isChinese=0;
-
-	for(i=1;i<this_phase->curr->len;++i){
-		ucs<<=8;
-		ucs|=data[i];
-	}
-
-	if (ucs < zhrange[0].first || ucs > zhrange[max].last){
-		//noop
-	}else while (max >= min) {
-		mid = (min + max) / 2;
-		if (ucs > zhrange[mid].last)
-			min = mid + 1;
-		else if (ucs < zhrange[mid].first)
-			max = mid - 1;
-		else{
-			isChinese=1;
-			break;
-		}
-	}
-
-	if(isChinese){
-		r->qh->c+=1;
-
-		r->qt->next=malloc(sizeof(struct ucs4_s));
-		r->qt=r->qt->next;
-		r->qt->c=ucs;
-		r->qt->next=NULL;
-		this_phase->state.status=SUBMATCH;
-		return;
-	}
-
 	size_t m=r->qh->c;
 	size_t n=r->qh->c * 2;
 	size_t on=n;
@@ -169,7 +132,7 @@ void cbconv(struct bsdconv_instance *ins){
 			UCP(this_phase->data_tail->data)[0]=0x01;
 			this_phase->data_tail->len=j;
 
-			ucs=ob[i];
+			uint32_t ucs=ob[i];
 			j-=1;
 			while(j){
 				UCP(this_phase->data_tail->data)[j]=ucs & 0xff;
@@ -179,11 +142,55 @@ void cbconv(struct bsdconv_instance *ins){
 		}
 	}
 
+	this_phase->state.status=NEXTPHASE;
+}
+
+void cbconv(struct bsdconv_instance *ins){
+	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
+	struct my_s *r=CURRENT_CODEC(ins)->priv;
+	unsigned char *data=data=this_phase->curr->data;
+	int ucs=0;
+	int i;
+	int max=sizeof(zhrange) / sizeof(struct range) - 1;
+	int min = 0;
+	int mid;
+	int isChinese=0;
+
+	for(i=1;i<this_phase->curr->len;++i){
+		ucs<<=8;
+		ucs|=data[i];
+	}
+
+	if (ucs < zhrange[0].first || ucs > zhrange[max].last){
+		//noop
+	}else while (max >= min) {
+		mid = (min + max) / 2;
+		if (ucs > zhrange[mid].last)
+			min = mid + 1;
+		else if (ucs < zhrange[mid].first)
+			max = mid - 1;
+		else{
+			isChinese=1;
+			break;
+		}
+	}
+
+	if(isChinese){
+		r->qh->c+=1;
+
+		r->qt->next=malloc(sizeof(struct ucs4_s));
+		r->qt=r->qt->next;
+		r->qt->c=ucs;
+		r->qt->next=NULL;
+		this_phase->state.status=SUBMATCH;
+		return;
+	}
+
+	cbflush(ins);
+
 	DATA_MALLOC(this_phase->data_tail->next);
 	this_phase->data_tail=this_phase->data_tail->next;
 	*(this_phase->data_tail)=*(this_phase->curr);
 	this_phase->curr->flags &= ~F_FREE;
 	this_phase->data_tail->next=NULL;
-
-	this_phase->state.status=NEXTPHASE;
 }
