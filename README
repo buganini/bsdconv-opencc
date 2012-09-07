@@ -1,5 +1,6 @@
 Example:
 	bsdconv utf-8:opencc-zhs2zhtw_vp:utf-8 chinese.txt
+	env BSDCONV_OPENCC=mix2zht.ini bsdconv utf-8:opencc:utf-8 chinese.txt
 
 Available conversions:
 	OPENCC-MIX2ZHS
