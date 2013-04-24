@@ -22,7 +22,7 @@ CONFIGS+=ZHTW2ZHS
 CONFIGS+=ZHTW2ZHT
 
 map: OPENCC.txt
-	bsdconv_mktable OPENCC.txt OPENCC
+	bsdconv-mktable OPENCC.txt OPENCC
 
 callback: OPENCC.c
 	for item in ${CONFIGS} ; do \
