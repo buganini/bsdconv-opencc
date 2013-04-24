@@ -18,6 +18,7 @@
  */
 
 #include <stdlib.h>
+#include <errno.h>
 #include <bsdconv.h>
 #include <opencc/opencc.h>
 #include <string.h>
@@ -53,9 +54,13 @@ static const struct range zhrange[] = {
 int cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
 	struct my_s *r=CURRENT_CODEC(ins)->priv=malloc(sizeof(struct my_s));
 	r->cc=opencc_open(BSDCONV_OPENCC_CONVERSION);
+	if(!r->cc){
+		free(r);
+		return EOPNOTSUPP;
+	}
 	r->qh=malloc(sizeof(struct ucs4_s));
 	r->qh->next=NULL;
-	return 1;
+	return 0;
 }
 
 void cbinit(struct bsdconv_instance *ins){
