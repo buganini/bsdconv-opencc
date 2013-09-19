@@ -51,7 +51,7 @@ static const struct range zhrange[] = {
 	{ 0x2F800, 0x2FA1D },//CJK Compatibility Supplement	;Unicode 3.1
 };
 
-int cbcreate(struct bsdconv_instance *ins, struct hash_entry *arg){
+int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 	struct my_s *r=CURRENT_CODEC(ins)->priv=malloc(sizeof(struct my_s));
 	r->cc=opencc_open(BSDCONV_OPENCC_CONVERSION);
 	if(!r->cc){
