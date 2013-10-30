@@ -1,6 +1,6 @@
 PREFIX?=/usr/local
 
-CFLAGS=-g -Wall -I${PREFIX}/include
+CFLAGS=-Wall -D_BSDCONV_INTERNAL -I${PREFIX}/include
 LIBS=-L${PREFIX}/lib -lbsdconv -lopencc
 
 all: map callback
