@@ -2,7 +2,7 @@
  * Reference: http://blog.oasisfeng.com/2006/10/19/full-cjk-unicode-range/
  * Some code come from http://www.cl.cam.ac.uk/~mgk25/ucs/wcwidth.c
  *
- * Copyright (c) 2012 Kuan-Chung Chiu <buganini@gmail.com>
+ * Copyright (c) 2012-2013 Kuan-Chung Chiu <buganini@gmail.com>
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -53,11 +53,22 @@ static const struct range zhrange[] = {
 
 int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 	struct my_s *r=CURRENT_CODEC(ins)->priv=malloc(sizeof(struct my_s));
-	r->cc=opencc_open(BSDCONV_OPENCC_CONVERSION);
-	if(!r->cc){
+	char *ini=NULL;
+
+	while(arg){
+		ini=arg->key;
+		arg=arg->next;
+	}
+
+	if(ini==NULL)
+		return EINVAL;
+
+	r->cc=opencc_open(ini);
+	if(r->cc==(opencc_t) -1){
 		free(r);
 		return EOPNOTSUPP;
 	}
+
 	r->qh=malloc(sizeof(struct ucs4_s));
 	r->qh->next=NULL;
 	return 0;

@@ -1,22 +1,20 @@
 Example:
-	bsdconv utf-8:opencc-zhs2zhtw_vp:utf-8 chinese.txt
-	env BSDCONV_OPENCC=mix2zht.ini bsdconv utf-8:opencc:utf-8 chinese.txt
+	echo 测试 | bsdconv utf-8:opencc#zhs2zhtw_vp.ini:utf-8
 
-Available conversions:
-	OPENCC-MIX2ZHS
-	OPENCC-MIX2ZHT
-	OPENCC-ZHS2ZHT
-	OPENCC-ZHS2ZHTW_P
-	OPENCC-ZHS2ZHTW_VP
-	OPENCC-ZHS2ZHTW_V
-	OPENCC-ZHT2ZHS
-	OPENCC-ZHT2ZHTW_P
-	OPENCC-ZHT2ZHTW_VP
-	OPENCC-ZHT2ZHTW_V
-	OPENCC-ZHTW2ZHCN_S
-	OPENCC-ZHTW2ZHCN_T
-	OPENCC-ZHTW2ZHS
-	OPENCC-ZHTW2ZHT
-	OPENCC // with config filename set in environment variable BSDCONV_OPENCC
+Available INIs:
+	mix2zhs
+	mix2zht
+	zhs2zht
+	zhs2zhtw_p
+	zhs2zhtw_vp
+	zhs2zhtw_v
+	zht2zhs
+	zht2zhtw_p
+	zht2zhtw_vp
+	zht2zhtw_v
+	zhtw2zhcn_s
+	zhtw2zhcn_t
+	zhtw2zhs
+	zhtw2zht
 
 See http://code.google.com/p/opencc/ for more informantion.
