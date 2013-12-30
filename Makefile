@@ -18,3 +18,4 @@ clean:
 install:
 	install -m 444 OPENCC ${DESTDIR}${PREFIX}/share/bsdconv/inter/OPENCC
 	install -m 444 OPENCC.so ${DESTDIR}${PREFIX}/share/bsdconv/inter/OPENCC.so
+	install -m 444 OPENCC.man ${DESTDIR}${PREFIX}/share/bsdconv/inter/OPENCC.man
