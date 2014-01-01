@@ -6,7 +6,7 @@ OUTPUT
 	DESC	OpenCC-Translated content
 
 ARGUMENT
-	$ConversionProfile, eg:
+	$ConversionProfile (mandatory), eg:
 		mix2zhs.ini
 		mix2zht.ini
 		zhs2zht.ini
