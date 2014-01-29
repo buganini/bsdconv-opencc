@@ -52,7 +52,7 @@ static const struct range zhrange[] = {
 };
 
 int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
-	struct my_s *r=CURRENT_CODEC(ins)->priv=malloc(sizeof(struct my_s));
+	struct my_s *r=THIS_CODEC(ins)->priv=malloc(sizeof(struct my_s));
 	char *ini=NULL;
 
 	while(arg){
@@ -75,7 +75,7 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 }
 
 void cbinit(struct bsdconv_instance *ins){
-	struct my_s *r=CURRENT_CODEC(ins)->priv;
+	struct my_s *r=THIS_CODEC(ins)->priv;
 	struct ucs4_s *t;
 	while(r->qh->next){
 		t=r->qh->next->next;
@@ -87,7 +87,7 @@ void cbinit(struct bsdconv_instance *ins){
 }
 
 void cbdestroy(struct bsdconv_instance *ins){
-	struct my_s *r=CURRENT_CODEC(ins)->priv;
+	struct my_s *r=THIS_CODEC(ins)->priv;
 	struct ucs4_s *t;
 	opencc_close(r->cc);
 	while(r->qh){
@@ -99,8 +99,8 @@ void cbdestroy(struct bsdconv_instance *ins){
 }
 
 void cbflush(struct bsdconv_instance *ins){
-	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
-	struct my_s *r=CURRENT_CODEC(ins)->priv;
+	struct bsdconv_phase *this_phase=THIS_PHASE(ins);
+	struct my_s *r=THIS_CODEC(ins)->priv;
 	struct ucs4_s *t;
 	int i,j;
 	size_t m=r->qh->c;
@@ -163,8 +163,8 @@ void cbflush(struct bsdconv_instance *ins){
 }
 
 void cbconv(struct bsdconv_instance *ins){
-	struct bsdconv_phase *this_phase=CURRENT_PHASE(ins);
-	struct my_s *r=CURRENT_CODEC(ins)->priv;
+	struct bsdconv_phase *this_phase=THIS_PHASE(ins);
+	struct my_s *r=THIS_CODEC(ins)->priv;
 	unsigned char *data=data=this_phase->curr->data;
 	int ucs=0;
 	int i;
