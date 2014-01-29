@@ -1,8 +1,9 @@
 DESTDIR?=
 PREFIX?=/usr/local
+LOCALBASE?=${PREFIX}
 
-CFLAGS=-Wall -D_BSDCONV_INTERNAL -I${PREFIX}/include
-LIBS=-L${PREFIX}/lib -lbsdconv -lopencc
+CFLAGS=-Wall -D_BSDCONV_INTERNAL -I${LOCALBASE}/include
+LIBS=-L${LOCALBASE}/lib -lbsdconv -lopencc
 
 all: map callback
 
