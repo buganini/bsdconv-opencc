@@ -141,7 +141,7 @@ void cbflush(struct bsdconv_instance *ins){
 				j=1;
 			}
 
-			DATA_MALLOC(this_phase->data_tail->next);
+			DATA_MALLOC(ins, this_phase->data_tail->next);
 			this_phase->data_tail=this_phase->data_tail->next;
 			this_phase->data_tail->next=NULL;
 			this_phase->data_tail->data=malloc(j);
@@ -205,9 +205,7 @@ void cbconv(struct bsdconv_instance *ins){
 
 	cbflush(ins);
 
-	DATA_MALLOC(this_phase->data_tail->next);
+	this_phase->data_tail->next=dup_data_rt(ins, this_phase->curr);
 	this_phase->data_tail=this_phase->data_tail->next;
-	*(this_phase->data_tail)=*(this_phase->curr);
-	this_phase->curr->flags &= ~F_FREE;
 	this_phase->data_tail->next=NULL;
 }
