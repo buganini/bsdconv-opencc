@@ -23,14 +23,10 @@
 #include <opencc/opencc.h>
 #include <string.h>
 
-struct ucs4_s {
-	size_t c;
-	struct ucs4_s *next;
-};
-
 struct my_s {
+	struct bsdconv_instance *insU8;
+	struct bsdconv_instance *ins8U;
 	opencc_t cc;
-	struct ucs4_s *qh, *qt;
 };
 
 struct range {
@@ -69,96 +65,54 @@ int cbcreate(struct bsdconv_instance *ins, struct bsdconv_hash_entry *arg){
 		return EOPNOTSUPP;
 	}
 
-	r->qh=malloc(sizeof(struct ucs4_s));
-	r->qh->next=NULL;
+	r->insU8 = bsdconv_create("PASS:UNICODE:UTF-8");
+	r->ins8U = bsdconv_create("UTF-8:PASS");
+
 	return 0;
 }
 
 void cbinit(struct bsdconv_instance *ins){
 	struct my_s *r=THIS_CODEC(ins)->priv;
-	struct ucs4_s *t;
-	while(r->qh->next){
-		t=r->qh->next->next;
-		free(r->qh->next);
-		r->qh->next=t;
-	}
-	r->qt=r->qh;
-	r->qh->c=0;
+	bsdconv_init(r->insU8);
+	bsdconv_init(r->ins8U);
 }
 
 void cbdestroy(struct bsdconv_instance *ins){
 	struct my_s *r=THIS_CODEC(ins)->priv;
-	struct ucs4_s *t;
+	bsdconv_destroy(r->insU8);
+	bsdconv_destroy(r->ins8U);
 	opencc_close(r->cc);
-	while(r->qh){
-		t=r->qh->next;
-		free(r->qh);
-		r->qh=t;
-	}
 	free(r);
 }
 
 void cbflush(struct bsdconv_instance *ins){
 	struct bsdconv_phase *this_phase=THIS_PHASE(ins);
 	struct my_s *r=THIS_CODEC(ins)->priv;
-	struct ucs4_s *t;
-	int i,j;
-	size_t m=r->qh->c;
-	size_t n=r->qh->c * 2;
-	size_t on=n;
 
-	ucs4_t ib[m];
-	ucs4_t ob[n];
-	ucs4_t *ic, *oc;
+	r->insU8->output.len = 0;
+	r->insU8->output_mode = BSDCONV_AUTOMALLOC;
+	r->insU8->flush = 1;
+	bsdconv(r->insU8);
+	char *utf8 = opencc_convert_utf8(r->cc, r->insU8->output.data, r->insU8->output.len);
+	bsdconv_free(r->insU8->output.data);
 
-	ic=ib;
-	while(r->qh->next){
-		*ic=r->qh->next->c;
-		t=r->qh->next->next;
-		free(r->qh->next);
-		r->qh->next=t;
-		ic+=1;
+	bsdconv_init(r->ins8U);
+	r->ins8U->input.data = utf8;
+	r->ins8U->input.len = strlen(utf8);
+	r->ins8U->input.flags = 0;
+	r->ins8U->input.next = NULL;
+	r->ins8U->output_mode = BSDCONV_HOLD;
+	r->ins8U->flush = 1;
+	bsdconv(r->ins8U);
+	opencc_convert_utf8_free(utf8);
+
+	struct bsdconv_phase *last = LAST_PHASE(r->ins8U);
+	this_phase->data_tail->next = last->data_head->next;
+	last->data_head->next = NULL;
+	last->data_tail = last->data_head;
+	while(this_phase->data_tail->next){
+		this_phase->data_tail = this_phase->data_tail->next;
 	}
-	r->qt=r->qh;
-	r->qh->c=0;
-
-	ic=ib;
-	while(m){
-		oc=ob;
-		n=on;
-		opencc_convert(r->cc, &ic, &m, &oc, &n);
-		for(i=0;i<on-n;++i){
-			j=0;
-			if(ob[i] & (0xff << 8*3)){
-				j=5;
-			}else if(ob[i] & (0xff << 8*2)){
-				j=4;
-			}else if(ob[i] & (0xff << 8*1)){
-				j=3;
-			}else if(ob[i] & (0xff << 8*0)){
-				j=2;
-			}else{
-				j=1;
-			}
-
-			DATA_MALLOC(ins, this_phase->data_tail->next);
-			this_phase->data_tail=this_phase->data_tail->next;
-			this_phase->data_tail->next=NULL;
-			this_phase->data_tail->data=malloc(j);
-			this_phase->data_tail->flags|=F_FREE;
-			UCP(this_phase->data_tail->data)[0]=0x01;
-			this_phase->data_tail->len=j;
-
-			uint32_t ucs=ob[i];
-			j-=1;
-			while(j){
-				UCP(this_phase->data_tail->data)[j]=ucs & 0xff;
-				ucs>>=8;
-				j-=1;
-			}
-		}
-	}
-
 	this_phase->state.status=NEXTPHASE;
 }
 
@@ -193,12 +147,14 @@ void cbconv(struct bsdconv_instance *ins){
 	}
 
 	if(isChinese){
-		r->qh->c+=1;
+		r->insU8->input.data = data;
+		r->insU8->input.len = this_phase->curr->len;
+		r->insU8->input.flags = 0;
+		r->insU8->input.next = NULL;
+		r->insU8->flush = 0;
+		r->insU8->output_mode = BSDCONV_HOLD;
+		bsdconv(r->insU8);
 
-		r->qt->next=malloc(sizeof(struct ucs4_s));
-		r->qt=r->qt->next;
-		r->qt->c=ucs;
-		r->qt->next=NULL;
 		this_phase->state.status=SUBMATCH;
 		return;
 	}

@@ -4,25 +4,6 @@ bsdconv-opencc is OpenCC inter-conversion module for bsdconv. OpenCC cannot do c
 
 #Example
 
-	echo 测试 | bsdconv utf-8:opencc#zhs2zhtw_vp.ini:utf-8
+	echo 测试 | bsdconv utf-8:opencc#s2t.json:utf-8
 
-#Available OpenCC conversion profiles
-
-According to my current installed opencc, there are
-
-	mix2zhs
-	mix2zht
-	zhs2zht
-	zhs2zhtw_p
-	zhs2zhtw_vp
-	zhs2zhtw_v
-	zht2zhs
-	zht2zhtw_p
-	zht2zhtw_vp
-	zht2zhtw_v
-	zhtw2zhcn_s
-	zhtw2zhcn_t
-	zhtw2zhs
-	zhtw2zht
-
-See http://code.google.com/p/opencc/ for more informantion.
+See https://github.com/BYVoid/OpenCC for more informantion.
